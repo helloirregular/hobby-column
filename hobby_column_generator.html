@@ -566,7 +566,7 @@ async function generateColumn(overrideLengthMode) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': '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', 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-5',
         max_tokens: 2000,
         system: buildSystemPrompt(),
         messages: [{ role: 'user', content: buildUserPrompt(overrideLengthMode) }]
@@ -574,7 +574,7 @@ async function generateColumn(overrideLengthMode) {
     });
 
     const data = await response.json();
-    const text = data.content?.[0]?.text || '';
+    const text = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text : (data.error ? '【エラー】' + data.error.message : '');
 
     // Parse title and body
     const titleMatch = text.match(/タイトル[：:]\s*(.+)/);
@@ -582,7 +582,7 @@ async function generateColumn(overrideLengthMode) {
 
     currentTitle = titleMatch ? titleMatch[1].trim() : '';
     currentBody = bodyMatch ? bodyMatch[1].trim() : text;
-
+    if (!currentBody) currentBody = text;
     const charCount = (currentTitle + currentBody).length;
 
     let html = '';
