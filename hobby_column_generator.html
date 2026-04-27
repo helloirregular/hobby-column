@@ -55,6 +55,11 @@
   .regenerate-bar { display: flex; gap: 10px; margin-top: 16px; }
   .regen-btn { flex: 1; padding: 10px; background: transparent; border: 1px solid var(--border); border-radius: 4px; font-family: 'Noto Sans JP', sans-serif; font-size: 12px; cursor: pointer; color: var(--ink); transition: all 0.15s; }
   .regen-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .writer-btns { display: flex; gap: 8px; }
+  .writer-btn { flex: 1; padding: 9px 8px; background: white; border: 1px solid var(--border); border-radius: 4px; font-family: "Noto Sans JP", sans-serif; font-size: 13px; cursor: pointer; transition: all 0.15s; color: var(--muted); }
+  .writer-btn.active { background: var(--ink); color: white; border-color: var(--ink); }
+  .writer-btn:hover:not(.active) { border-color: var(--ink); color: var(--ink); }
   @media (max-width: 900px) {
     .layout { grid-template-columns: 1fr; }
     .input-panel { max-height: none; border-right: none; border-bottom: 1px solid var(--border); }
@@ -156,6 +161,17 @@
       </div>
     </div>
 
+    <div class="section-divider">担当者</div>
+    <div class="field-group">
+      <label>担当者を選択</label>
+      <div class="writer-btns">
+        <button class="writer-btn active" data-writer="murota" onclick="setWriter(this)">室田</button>
+        <button class="writer-btn" data-writer="saeki" onclick="setWriter(this)">佐伯</button>
+        <button class="writer-btn" data-writer="tamai" onclick="setWriter(this)">玉井</button>
+        <button class="writer-btn" data-writer="morioka" onclick="setWriter(this)">森岡</button>
+      </div>
+    </div>
+
     <div class="section-divider">コラムの素材</div>
 
     <div class="field-group">
@@ -236,24 +252,70 @@ const SAMPLE_COLUMNS = [
   "紅葉した桜の木の脇を、ちょろちょろと小川が流れる、ほのぼのとした緑道。そんな癒しの空間を目の前に、こちらの物件は立っています。    まず緑道から部屋へのアプローチが、もう素敵。戦前のものだという立派な門から入り、飛び石の小道を数歩進むと、玄関へたどり着きます。    環境的にも物件的にも、「井の頭線沿いらしい暮らし」を探している方に合いそうです。"
 ];
 
-function buildSystemPrompt() {
-  const examples = SAMPLE_COLUMNS.join('\n\n---\n\n');
-  return `あなたは不動産仲介会社「ホビー不動産」の代表、室田啓介の文体でコラムを書くライターです。
+let currentWriter = 'murota';
+
+function setWriter(btn) {
+  document.querySelectorAll('.writer-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentWriter = btn.dataset.writer;
+}
+
+const WRITER_PROMPTS = {
+  murota: {
+    name: '室田啓介',
+    prompt: `あなたは不動産仲介会社「ホビー不動産」の代表、室田啓介の文体でコラムを書くライターです。
 室田さんは東京R不動産で18年のキャリアを持ち、「不動産をホビーに」をコンセプトに活動しています。
 
 【室田啓介の文体ルール】
 - 一人称は「僕」
-- 会話口調で、でも軽すぎない。読者と一緒に物件を楽しむような温度感
+- 会話口調ではあるが、品のある読み物として成立する文体を保つ。「〜っぽい」「〜みたいな」などの砕けすぎた表現は避ける
 - 物件の「惚れポイント」を最初か早い段階で読者に体験させる
-- 素材名・寸法・具体的な体感を使って描写する
+- 素材名・寸法・具体的な体感を使って描写する（「緑と空がちょうど半々に見える」「ソファに腰掛けると」など）
 - ネックは正直に書くが、ポジティブに転換するか、そのまま受け入れてもらう形で書く
 - 「どんな人向きか」は決めつけすぎず、でも具体的に
 - 街の話は個人的なエピソードや発見を交えて
 - 締め方は「〜な方はぜひ」「グッと来た方はぜひ」などシンプルに
 - 段落は短め。一段落2〜4文くらい
-- タイトルは物件の本質を掴んだキャッチコピー（例：「目黒富士山頂アパート！？」「だって、西荻だもの」「合板×合板×合板」）
+- タイトルは物件の本質を掴んだキャッチコピー（例：「目黒富士山頂アパート！？」「だって、西荻だもの」「合板×合板×合板」）`
+  },
+  saeki: {
+    name: '佐伯',
+    prompt: `あなたは不動産仲介会社「ホビー不動産」スタッフ、佐伯の文体でコラムを書くライターです。
+※佐伯さんの文体データは準備中です。現在は室田啓介のスタイルに準じて書いてください。
+- 一人称は「僕」
+- 品のある会話口調。読み物として成立する文体を保つ
+- 物件の「惚れポイント」を早い段階で読者に体験させる
+- ネックは正直に、でもポジティブに
+- 締め方はシンプルに`
+  },
+  tamai: {
+    name: '玉井',
+    prompt: `あなたは不動産仲介会社「ホビー不動産」スタッフ、玉井の文体でコラムを書くライターです。
+※玉井さんの文体データは準備中です。現在は室田啓介のスタイルに準じて書いてください。
+- 一人称は「私」または「僕」
+- 品のある会話口調。読み物として成立する文体を保つ
+- 物件の「惚れポイント」を早い段階で読者に体験させる
+- ネックは正直に、でもポジティブに
+- 締め方はシンプルに`
+  },
+  morioka: {
+    name: '森岡',
+    prompt: `あなたは不動産仲介会社「ホビー不動産」スタッフ、森岡の文体でコラムを書くライターです。
+※森岡さんの文体データは準備中です。現在は室田啓介のスタイルに準じて書いてください。
+- 一人称は「私」または「僕」
+- 品のある会話口調。読み物として成立する文体を保つ
+- 物件の「惚れポイント」を早い段階で読者に体験させる
+- ネックは正直に、でもポジティブに
+- 締め方はシンプルに`
+  }
+};
 
-【文体サンプル】
+function buildSystemPrompt() {
+  const examples = SAMPLE_COLUMNS.join('\n\n---\n\n');
+  const writer = WRITER_PROMPTS[currentWriter] || WRITER_PROMPTS.murota;
+  return `${writer.prompt}
+
+【文体サンプル（室田啓介の実際のコラム）】
 ${examples}
 
 【生成ルール】
@@ -269,7 +331,8 @@ function buildUserPrompt(overrideLengthMode) {
   if (overrideLengthMode === 'shorter') length = Math.max(500, targetLength - 300);
   if (overrideLengthMode === 'longer') length = Math.min(1500, targetLength + 300);
 
-  let prompt = `以下の物件情報をもとに、室田さんらしいコラムを${length}字前後で書いてください。\n\n【物件情報】\n`;
+  const writer = WRITER_PROMPTS[currentWriter] || WRITER_PROMPTS.murota;
+  let prompt = `以下の物件情報をもとに、${writer.name}らしいコラムを${length}字前後で書いてください。\n\n【物件情報】\n`;
   if (vals('category')) prompt += `カテゴリー：${vals('category')}\n`;
   if (vals('type')) prompt += `種別：${vals('type')}\n`;
   const addr = [vals('pref'), vals('city'), vals('town')].filter(Boolean).join('');
