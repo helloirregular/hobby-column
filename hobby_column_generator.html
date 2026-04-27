@@ -6,66 +6,56 @@
 <title>ホビー不動産 コラムジェネレーター</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700&family=Noto+Sans+JP:wght@300;400;500&display=swap');
-  :root {
-    --ink: #1a1a18; --cream: #f5f0e8; --accent: #c4552a; --accent-light: #e8724a;
-    --muted: #8a8070; --border: #d4cabb; --success: #4a7c5a;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Noto Sans JP', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; font-size: 14px; line-height: 1.7; }
-  header { background: var(--ink); padding: 20px 32px; display: flex; align-items: baseline; gap: 16px; position: sticky; top: 0; z-index: 100; }
-  header h1 { font-family: 'Noto Serif JP', serif; font-size: 18px; color: var(--cream); letter-spacing: 0.05em; font-weight: 600; }
-  header span { font-size: 11px; color: var(--muted); letter-spacing: 0.1em; }
-  .layout { display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 61px); }
-  .input-panel { padding: 32px; border-right: 1px solid var(--border); overflow-y: auto; max-height: calc(100vh - 61px); }
-  .output-panel { padding: 32px; overflow-y: auto; max-height: calc(100vh - 61px); display: flex; flex-direction: column; }
-  .section-label { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-  .section-divider { font-size: 10px; letter-spacing: 0.12em; color: var(--muted); margin: 24px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-  .field-group { margin-bottom: 16px; }
-  label { display: block; font-size: 12px; font-weight: 500; color: var(--ink); margin-bottom: 5px; letter-spacing: 0.02em; }
-  label .optional { font-weight: 300; color: var(--muted); font-size: 11px; margin-left: 4px; }
-  input[type="text"], textarea, select { width: 100%; background: white; border: 1px solid var(--border); border-radius: 4px; padding: 9px 12px; font-family: 'Noto Sans JP', sans-serif; font-size: 13px; color: var(--ink); outline: none; transition: border-color 0.15s; resize: vertical; }
-  input[type="text"]:focus, textarea:focus, select:focus { border-color: var(--accent); }
-  textarea { min-height: 72px; }
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-  .length-control { display: flex; gap: 8px; }
-  .length-btn { flex: 1; padding: 8px; background: white; border: 1px solid var(--border); border-radius: 4px; font-family: 'Noto Sans JP', sans-serif; font-size: 12px; cursor: pointer; text-align: center; transition: all 0.15s; color: var(--muted); }
-  .length-btn.active { background: var(--ink); color: white; border-color: var(--ink); }
-  .generate-btn { width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 4px; font-family: 'Noto Sans JP', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; letter-spacing: 0.05em; transition: background 0.15s; margin-top: 24px; }
-  .generate-btn:hover { background: var(--accent-light); }
-  .generate-btn:disabled { background: var(--muted); cursor: not-allowed; }
-  .output-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-  .output-meta { font-size: 11px; color: var(--muted); }
-  .copy-btn { padding: 7px 16px; background: transparent; border: 1px solid var(--border); border-radius: 4px; font-family: 'Noto Sans JP', sans-serif; font-size: 12px; cursor: pointer; color: var(--ink); transition: all 0.15s; }
-  .copy-btn:hover { border-color: var(--ink); }
-  .copy-btn.copied { border-color: var(--success); color: var(--success); }
-  .output-box { flex: 1; background: white; border: 1px solid var(--border); border-radius: 4px; padding: 24px; min-height: 400px; overflow: auto; word-break: break-all; overflow-wrap: break-word; }
-  .placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 300px; color: var(--muted); text-align: center; gap: 12px; }
-  .placeholder-icon { font-size: 32px; opacity: 0.3; }
-  .placeholder p { font-size: 13px; line-height: 1.6; }
-  .result-title { font-family: 'Noto Serif JP', serif; font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border); line-height: 1.5; word-break: break-all; }
-  .result-body { font-size: 13.5px; line-height: 2; color: var(--ink); white-space: pre-wrap; word-break: break-all; overflow-wrap: break-word; }
-  .loading-dots { display: flex; gap: 6px; align-items: center; justify-content: center; padding: 40px; }
-  .loading-dots span { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; animation: dot-bounce 1.2s infinite ease-in-out; }
-  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes dot-bounce { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; } 40% { transform: scale(1); opacity: 1; } }
-  .char-count { margin-top: 12px; text-align: right; font-size: 11px; color: var(--muted); }
-  .error-msg { color: var(--accent); font-size: 13px; padding: 16px; background: #fdf0ec; border-radius: 4px; border: 1px solid #f0c4b8; }
-  .regenerate-bar { display: flex; gap: 10px; margin-top: 16px; }
-  .regen-btn { flex: 1; padding: 10px; background: transparent; border: 1px solid var(--border); border-radius: 4px; font-family: 'Noto Sans JP', sans-serif; font-size: 12px; cursor: pointer; color: var(--ink); transition: all 0.15s; }
-  .regen-btn:hover { border-color: var(--accent); color: var(--accent); }
-
-  .writer-btns { display: flex; gap: 8px; }
-  .writer-btn { flex: 1; padding: 9px 8px; background: white; border: 1px solid var(--border); border-radius: 4px; font-family: "Noto Sans JP", sans-serif; font-size: 13px; cursor: pointer; transition: all 0.15s; color: var(--muted); }
-  .writer-btn.active { background: var(--ink); color: white; border-color: var(--ink); }
-  .writer-btn:hover:not(.active) { border-color: var(--ink); color: var(--ink); }
-  @media (max-width: 900px) {
-    .layout { grid-template-columns: 1fr; }
-    .input-panel { max-height: none; border-right: none; border-bottom: 1px solid var(--border); }
-    .output-panel { max-height: none; }
-    .two-col, .three-col { grid-template-columns: 1fr; }
-  }
+  :root { --ink:#1a1a18;--cream:#f5f0e8;--accent:#c4552a;--accent-light:#e8724a;--muted:#8a8070;--border:#d4cabb;--success:#4a7c5a; }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Noto Sans JP',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;font-size:14px;line-height:1.7;}
+  header{background:var(--ink);padding:20px 32px;display:flex;align-items:baseline;gap:16px;position:sticky;top:0;z-index:100;}
+  header h1{font-family:'Noto Serif JP',serif;font-size:18px;color:var(--cream);letter-spacing:.05em;font-weight:600;}
+  header span{font-size:11px;color:var(--muted);letter-spacing:.1em;}
+  .layout{display:grid;grid-template-columns:1fr 1fr;min-height:calc(100vh - 61px);}
+  .input-panel{padding:32px;border-right:1px solid var(--border);overflow-y:auto;max-height:calc(100vh - 61px);}
+  .output-panel{padding:32px;overflow-y:auto;max-height:calc(100vh - 61px);display:flex;flex-direction:column;}
+  .section-label{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+  .section-divider{font-size:10px;letter-spacing:.12em;color:var(--muted);margin:24px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+  .field-group{margin-bottom:16px;}
+  label{display:block;font-size:12px;font-weight:500;color:var(--ink);margin-bottom:5px;letter-spacing:.02em;}
+  label .opt{font-weight:300;color:var(--muted);font-size:11px;margin-left:4px;}
+  input[type=text],textarea,select{width:100%;background:white;border:1px solid var(--border);border-radius:4px;padding:9px 12px;font-family:'Noto Sans JP',sans-serif;font-size:13px;color:var(--ink);outline:none;transition:border-color .15s;resize:vertical;}
+  input[type=text]:focus,textarea:focus,select:focus{border-color:var(--accent);}
+  textarea{min-height:72px;}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .writer-btns{display:flex;gap:8px;}
+  .writer-btn{flex:1;padding:9px 8px;background:white;border:1px solid var(--border);border-radius:4px;font-family:'Noto Sans JP',sans-serif;font-size:13px;cursor:pointer;transition:all .15s;color:var(--muted);}
+  .writer-btn.active{background:var(--ink);color:white;border-color:var(--ink);}
+  .writer-btn:hover:not(.active){border-color:var(--ink);color:var(--ink);}
+  .length-control{display:flex;gap:8px;}
+  .length-btn{flex:1;padding:8px;background:white;border:1px solid var(--border);border-radius:4px;font-family:'Noto Sans JP',sans-serif;font-size:12px;cursor:pointer;text-align:center;transition:all .15s;color:var(--muted);}
+  .length-btn.active{background:var(--ink);color:white;border-color:var(--ink);}
+  .generate-btn{width:100%;padding:14px;background:var(--accent);color:white;border:none;border-radius:4px;font-family:'Noto Sans JP',sans-serif;font-size:14px;font-weight:500;cursor:pointer;letter-spacing:.05em;transition:background .15s;margin-top:24px;}
+  .generate-btn:hover{background:var(--accent-light);}
+  .generate-btn:disabled{background:var(--muted);cursor:not-allowed;}
+  .output-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+  .output-meta{font-size:11px;color:var(--muted);}
+  .copy-btn{padding:7px 16px;background:transparent;border:1px solid var(--border);border-radius:4px;font-family:'Noto Sans JP',sans-serif;font-size:12px;cursor:pointer;color:var(--ink);transition:all .15s;}
+  .copy-btn:hover{border-color:var(--ink);}
+  .copy-btn.copied{border-color:var(--success);color:var(--success);}
+  .output-box{flex:1;background:white;border:1px solid var(--border);border-radius:4px;padding:24px;min-height:400px;overflow:auto;word-break:break-all;overflow-wrap:break-word;}
+  .placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;min-height:300px;color:var(--muted);text-align:center;gap:12px;}
+  .placeholder-icon{font-size:32px;opacity:.3;}
+  .placeholder p{font-size:13px;line-height:1.6;}
+  .result-title{font-family:'Noto Serif JP',serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border);line-height:1.5;word-break:break-all;}
+  .result-body{font-size:13.5px;line-height:2;color:var(--ink);white-space:pre-wrap;word-break:break-all;overflow-wrap:break-word;}
+  .loading-dots{display:flex;gap:6px;align-items:center;justify-content:center;padding:40px;}
+  .loading-dots span{width:8px;height:8px;background:var(--accent);border-radius:50%;animation:dot-bounce 1.2s infinite ease-in-out;}
+  .loading-dots span:nth-child(2){animation-delay:.2s;}
+  .loading-dots span:nth-child(3){animation-delay:.4s;}
+  @keyframes dot-bounce{0%,80%,100%{transform:scale(.6);opacity:.4;}40%{transform:scale(1);opacity:1;}}
+  .char-count{margin-top:12px;text-align:right;font-size:11px;color:var(--muted);}
+  .error-msg{color:var(--accent);font-size:13px;padding:16px;background:#fdf0ec;border-radius:4px;border:1px solid #f0c4b8;}
+  .regenerate-bar{display:flex;gap:10px;margin-top:16px;}
+  .regen-btn{flex:1;padding:10px;background:transparent;border:1px solid var(--border);border-radius:4px;font-family:'Noto Sans JP',sans-serif;font-size:12px;cursor:pointer;color:var(--ink);transition:all .15s;}
+  .regen-btn:hover{border-color:var(--accent);color:var(--accent);}
+  @media(max-width:900px){.layout{grid-template-columns:1fr;}.input-panel{max-height:none;border-right:none;border-bottom:1px solid var(--border);}.output-panel{max-height:none;}.two-col{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -76,9 +66,10 @@
 <div class="layout">
   <div class="input-panel">
     <div class="section-label">物件情報を入力</div>
+
     <div class="two-col">
       <div class="field-group">
-        <label>不動産カテゴリー <span class="optional">必須</span></label>
+        <label>不動産カテゴリー</label>
         <select id="category">
           <option value="">選択</option>
           <option value="売買">売買</option>
@@ -86,7 +77,7 @@
         </select>
       </div>
       <div class="field-group">
-        <label>物件種別 <span class="optional">必須</span></label>
+        <label>物件種別 <span class="opt">必須</span></label>
         <select id="type">
           <option value="">選択</option>
           <option value="売買マンション">売買マンション</option>
@@ -101,49 +92,33 @@
         </select>
       </div>
     </div>
-    <div class="three-col">
-      <div class="field-group">
-        <label>都道府県</label>
-        <input type="text" id="pref" placeholder="例：東京都">
-      </div>
-      <div class="field-group">
-        <label>市区町村</label>
-        <input type="text" id="city" placeholder="例：港区">
-      </div>
-      <div class="field-group">
-        <label>町名</label>
-        <input type="text" id="town" placeholder="例：南麻布">
-      </div>
-    </div>
+
     <div class="field-group">
-      <label>建物名</label>
-      <input type="text" id="building" placeholder="例：南麻布パーク・ホームズ">
+      <label>エリア・住所 <span class="opt">あれば</span></label>
+      <input type="text" id="address" placeholder="例：港区南麻布、世田谷区駒沢">
     </div>
+
     <div class="field-group">
       <label>交通（最寄り駅・徒歩）</label>
       <input type="text" id="access" placeholder="例：南北線「麻布十番」駅 徒歩9分">
     </div>
+
     <div class="two-col">
       <div class="field-group">
         <label>価格・賃料</label>
         <input type="text" id="price" placeholder="例：21,800万円 / 月15万円">
       </div>
       <div class="field-group">
-        <label>建物面積</label>
-        <input type="text" id="area" placeholder="例：70.10㎡">
-      </div>
-    </div>
-    <div class="two-col">
-      <div class="field-group">
         <label>間取り</label>
         <input type="text" id="madori" placeholder="例：2LDK">
       </div>
+    </div>
+
+    <div class="two-col">
       <div class="field-group">
         <label>何年築</label>
         <input type="text" id="built" placeholder="例：1995年築">
       </div>
-    </div>
-    <div class="two-col">
       <div class="field-group">
         <label>構造</label>
         <select id="structure">
@@ -154,10 +129,6 @@
           <option value="木造">木造</option>
           <option value="軽量鉄骨造">軽量鉄骨造</option>
         </select>
-      </div>
-      <div class="field-group">
-        <label>所在階</label>
-        <input type="text" id="floor" placeholder="例：8階 / 地上9階建">
       </div>
     </div>
 
@@ -175,33 +146,33 @@
     <div class="section-divider">コラムの素材</div>
 
     <div class="field-group">
-      <label>一番の「惚れポイント」 <span class="optional">必須</span></label>
+      <label>一番の「惚れポイント」 <span class="opt">必須</span></label>
       <textarea id="appeal" placeholder="この物件で一番グッときた場所・瞬間・理由を教えてください。
 例：ソファに座ると緑と空がちょうど半々に見える、神社の境内の中にあって帰るたびに達成感がある"></textarea>
     </div>
     <div class="field-group">
-      <label>内装・空間の特徴 <span class="optional">あれば</span></label>
+      <label>内装・空間の特徴 <span class="opt">あれば</span></label>
       <textarea id="interior" placeholder="素材、天井高、光、特徴的なディテールなど
-例：オーク無垢フロア、天高3m、南東角部屋で光がたっぷり、造作キッチンがかっこいい"></textarea>
+例：オーク無垢フロア、天高3m、南東角部屋で光がたっぷり、造作キッチン"></textarea>
     </div>
     <div class="field-group">
-      <label>眺望・自然環境 <span class="optional">あれば</span></label>
+      <label>眺望・自然環境 <span class="opt">あれば</span></label>
       <input type="text" id="view" placeholder="例：公園VIEWでカーテンいらず、多摩川河川敷まで2分">
     </div>
     <div class="field-group">
-      <label>間取りの面白ポイント・使い方提案 <span class="optional">あれば</span></label>
+      <label>間取りの面白ポイント・使い方提案 <span class="opt">あれば</span></label>
       <textarea id="layout_idea" placeholder="例：ワークスペースが独立してて共働きに◎、1階だけど人目がなくて快適"></textarea>
     </div>
     <div class="field-group">
-      <label>街・エリアの印象 <span class="optional">あれば</span></label>
+      <label>街・エリアの印象 <span class="opt">あれば</span></label>
       <textarea id="area_note" placeholder="個人的に知ってるお気に入りのお店、街の空気感、ローカルな情報など"></textarea>
     </div>
     <div class="field-group">
-      <label>正直なネック <span class="optional">あれば</span></label>
+      <label>正直なネック <span class="opt">あれば</span></label>
       <input type="text" id="drawback" placeholder="例：駅から12分、エレベーターなし4階、バランス釜">
     </div>
     <div class="field-group">
-      <label>どんな人に向くか <span class="optional">あれば</span></label>
+      <label>どんな人に向くか <span class="opt">あれば</span></label>
       <input type="text" id="target" placeholder="例：アウトドア好きのカップル、在宅ワーカー、古さより個性重視の方">
     </div>
     <div class="field-group">
@@ -240,25 +211,18 @@
 
 <script>
 let targetLength = 900;
+let currentWriter = 'murota';
 let currentTitle = '';
 let currentBody = '';
 
 const SAMPLE_COLUMNS = [
-  "一生賃貸暮らしはないよね、と思いつつ、とはいえ仕事や家族構成が変わるかもしれないし、多額のローンを背負うのはちょっと違うかも。みたいな方に、ちょっと都心から距離をおくことで、無理のない負担で結構リアルな選択肢が手に入るかも？という物件のご提案。    田園都市線で渋谷から揺られること約20分の場所にある梶が谷駅から歩くこと7分。一人暮らし〜DINKSにハマりの良さそうな1LDKの間取り。    表記では約11.2帖ながら寝室との間仕切りをガラス建具にしているためかなり開放的な印象のあるリビング。長方形の形が使い勝手よくて、リビングとダイニングそれぞれゆったりと確保できます。",
-  "目黒区に富士山があることをご存知でしょうか？    246号線の大橋の信号から氷川神社へと上がる階段の脇に、「目黒富士登山口」なる標識があります。    この登山口から1分弱の登山を開始すると、みるみるうちに三合目、五合目、そして「目黒富士山頂上」の標識が。    日々、帰宅の度に得られる頂上での達成感。そうです、このアパート、この頂上に立つ氷川神社の境内にあるのです。    ということはもちろん、窓の外にはワッサワッサと緑VIEW。246号線からはかなり上ったおかげで騒音は気にならず、落ち着く住環境。    いわゆる木造賃貸アパートなので、室内に過度な期待は禁物ですが、色々とリフォームされているため室内はきれいな印象。    木造アパートに抵抗ない方は、ぜひ。",
-  "エントランスホールでは音楽が流れ、まるでホテルのような雰囲気で迎えられる赤茶色の重厚感のあるマンションの一室。    リビングのドアを開けると目に飛び込んでくるのはRがかった2つのカウンター。曲線に誘導されるようにバルコニーへと視線をやると、緑豊かな街並みと、遠くには新宿副都心のビル群が臨めます。    まるでホテルに泊まるように暮らす都心居住。グッと来た方はぜひ。",
-  "大岡山の閑静な住宅街に立つ、ビーフンデザインの設計による小さな集合住宅。    無垢フローリングと白壁でシンプルにまとめた空間は、大きなワンルームながらゾーンごとに役割を与えられ、どこになにを配置すればいいのか悩まない間取りです。    カップルでも十分にお住まいいただける広さがありますので、二人暮らしにもぜひ。",
-  "六本木駅2分という好立地に建つ、2010年に一棟丸ごとリノベーションにより生まれ変わったこのオフィス。    ざっくりと配管剥き出しの天井を塗装し、床はナラ材の無垢フローリング。シンプルな空間はどんな業種にも合いそう。    六本木と聞くとどうしても猥雑な空間をイメージしますが、この物件はシンプル、ナチュラル、至って快適。このギャップが一番の魅力だと思います。",
-  "紅葉した桜の木の脇を、ちょろちょろと小川が流れる、ほのぼのとした緑道。そんな癒しの空間を目の前に、こちらの物件は立っています。    まず緑道から部屋へのアプローチが、もう素敵。戦前のものだという立派な門から入り、飛び石の小道を数歩進むと、玄関へたどり着きます。    環境的にも物件的にも、「井の頭線沿いらしい暮らし」を探している方に合いそうです。"
+  "一生賃貸暮らしはないよね、と思いつつ、とはいえ仕事や家族構成が変わるかもしれないし、多額のローンを背負うのはちょっと違うかも。みたいな方に、ちょっと都心から距離をおくことで、無理のない負担で結構リアルな選択肢が手に入るかもしれません、という物件のご提案。    田園都市線で渋谷から揺られること約20分の場所にある梶が谷駅から歩くこと7分。一人暮らし〜DINKSにハマりの良さそうな1LDKの間取りです。    表記では約11.2帖ながら寝室との間仕切りをガラス建具にしているためかなり開放的な印象のあるリビング。長方形の形が使い勝手よくて、リビングとダイニングそれぞれゆったりと確保できます。",
+  "目黒区に富士山があることをご存知でしょうか？    246号線の大橋の信号から氷川神社へと上がる階段の脇に、「目黒富士登山口」なる標識があります。    この登山口から1分弱の登山を開始すると、みるみるうちに三合目、五合目、そして「目黒富士山頂上」の標識が。    日々、帰宅の度に得られる頂上での達成感。そうです、このアパート、この頂上に立つ氷川神社の境内にあるのです。    ということはもちろん、窓の外にはワッサワッサと緑VIEW。246号線からはかなり上ったおかげで騒音は気にならず、落ち着く住環境です。    いわゆる木造賃貸アパートなので、室内に過度な期待は禁物ですが、色々とリフォームされているため室内はきれいな印象。    木造アパートに抵抗ない方は、ぜひ。",
+  "エントランスホールでは音楽が流れ、まるでホテルのような雰囲気で迎えられる赤茶色の重厚感のあるマンションの一室です。    リビングのドアを開けると目に飛び込んでくるのはRがかった2つのカウンター。曲線に誘導されるようにバルコニーへと視線をやると、緑豊かな街並みと、遠くには新宿副都心のビル群が臨めます。    まるでホテルに泊まるように暮らす都心居住。グッと来た方はぜひ。",
+  "大岡山の閑静な住宅街に立つ、ビーフンデザインの設計による小さな集合住宅です。    無垢フローリングと白壁でシンプルにまとめた空間は、大きなワンルームながらゾーンごとに役割を与えられ、どこになにを配置すればいいのか悩まない間取りです。    カップルでも十分にお住まいいただける広さがありますので、二人暮らしにもぜひ。",
+  "六本木駅2分という好立地に建つ、2010年に一棟丸ごとリノベーションにより生まれ変わったこのオフィスです。    ざっくりと配管剥き出しの天井を塗装し、床はナラ材の無垢フローリング。シンプルな空間はどんな業種にも合いそうです。    六本木と聞くとどうしても猥雑な空間をイメージしますが、この物件はシンプル、ナチュラル、至って快適。このギャップが一番の魅力だと思います。",
+  "紅葉した桜の木の脇を、ちょろちょろと小川が流れる、ほのぼのとした緑道。そんな癒しの空間を目の前に、こちらの物件は立っています。    まず緑道から部屋へのアプローチが、もう素敵です。戦前のものだという立派な門から入り、飛び石の小道を数歩進むと、玄関へたどり着きます。    環境的にも物件的にも、「井の頭線沿いらしい暮らし」を探している方に合いそうです。"
 ];
-
-let currentWriter = 'murota';
-
-function setWriter(btn) {
-  document.querySelectorAll('.writer-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  currentWriter = btn.dataset.writer;
-}
 
 const WRITER_PROMPTS = {
   murota: {
@@ -268,13 +232,14 @@ const WRITER_PROMPTS = {
 
 【室田啓介の文体ルール】
 - 一人称は「僕」
-- 会話口調ではあるが、品のある読み物として成立する文体を保つ。「〜っぽい」「〜みたいな」などの砕けすぎた表現は避ける
+- 会話口調ではあるが、品のある読み物として成立する文体を保つ。「〜っぽい」「〜みたいな」などの砕けすぎた表現は使わない
+- 文末は「〜です」「〜ます」で統一する。「〜だ」「〜である」「〜だろう」「〜ではないか」などの体言止めや断定調は使わない
 - 物件の「惚れポイント」を最初か早い段階で読者に体験させる
-- 素材名・寸法・具体的な体感を使って描写する（「緑と空がちょうど半々に見える」「ソファに腰掛けると」など）
+- 素材名・寸法・具体的な体感を使って描写する（「緑と空がちょうど半々に見えます」「ソファに腰掛けると」など）
 - ネックは正直に書くが、ポジティブに転換するか、そのまま受け入れてもらう形で書く
 - 「どんな人向きか」は決めつけすぎず、でも具体的に
 - 街の話は個人的なエピソードや発見を交えて
-- 締め方は「〜な方はぜひ」「グッと来た方はぜひ」などシンプルに
+- 締め方は「〜な方はぜひ。」「グッと来た方はぜひ。」などシンプルに
 - 段落は短め。一段落2〜4文くらい
 - タイトルは物件の本質を掴んだキャッチコピー（例：「目黒富士山頂アパート！？」「だって、西荻だもの」「合板×合板×合板」）`
   },
@@ -283,7 +248,7 @@ const WRITER_PROMPTS = {
     prompt: `あなたは不動産仲介会社「ホビー不動産」スタッフ、佐伯の文体でコラムを書くライターです。
 ※佐伯さんの文体データは準備中です。現在は室田啓介のスタイルに準じて書いてください。
 - 一人称は「僕」
-- 品のある会話口調。読み物として成立する文体を保つ
+- 品のある会話口調。「〜です」「〜ます」で統一する
 - 物件の「惚れポイント」を早い段階で読者に体験させる
 - ネックは正直に、でもポジティブに
 - 締め方はシンプルに`
@@ -293,7 +258,7 @@ const WRITER_PROMPTS = {
     prompt: `あなたは不動産仲介会社「ホビー不動産」スタッフ、玉井の文体でコラムを書くライターです。
 ※玉井さんの文体データは準備中です。現在は室田啓介のスタイルに準じて書いてください。
 - 一人称は「私」または「僕」
-- 品のある会話口調。読み物として成立する文体を保つ
+- 品のある会話口調。「〜です」「〜ます」で統一する
 - 物件の「惚れポイント」を早い段階で読者に体験させる
 - ネックは正直に、でもポジティブに
 - 締め方はシンプルに`
@@ -303,12 +268,18 @@ const WRITER_PROMPTS = {
     prompt: `あなたは不動産仲介会社「ホビー不動産」スタッフ、森岡の文体でコラムを書くライターです。
 ※森岡さんの文体データは準備中です。現在は室田啓介のスタイルに準じて書いてください。
 - 一人称は「私」または「僕」
-- 品のある会話口調。読み物として成立する文体を保つ
+- 品のある会話口調。「〜です」「〜ます」で統一する
 - 物件の「惚れポイント」を早い段階で読者に体験させる
 - ネックは正直に、でもポジティブに
 - 締め方はシンプルに`
   }
 };
+
+function setWriter(btn) {
+  document.querySelectorAll('.writer-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentWriter = btn.dataset.writer;
+}
 
 function buildSystemPrompt() {
   const examples = SAMPLE_COLUMNS.join('\n\n---\n\n');
@@ -326,35 +297,30 @@ ${examples}
 }
 
 function buildUserPrompt(overrideLengthMode) {
-  const vals = id => document.getElementById(id).value;
+  const v = id => document.getElementById(id).value;
   let length = targetLength;
   if (overrideLengthMode === 'shorter') length = Math.max(500, targetLength - 300);
   if (overrideLengthMode === 'longer') length = Math.min(1500, targetLength + 300);
-
   const writer = WRITER_PROMPTS[currentWriter] || WRITER_PROMPTS.murota;
-  let prompt = `以下の物件情報をもとに、${writer.name}らしいコラムを${length}字前後で書いてください。\n\n【物件情報】\n`;
-  if (vals('category')) prompt += `カテゴリー：${vals('category')}\n`;
-  if (vals('type')) prompt += `種別：${vals('type')}\n`;
-  const addr = [vals('pref'), vals('city'), vals('town')].filter(Boolean).join('');
-  if (addr) prompt += `所在地：${addr}\n`;
-  if (vals('building')) prompt += `建物名：${vals('building')}\n`;
-  if (vals('access')) prompt += `交通：${vals('access')}\n`;
-  if (vals('price')) prompt += `価格・賃料：${vals('price')}\n`;
-  if (vals('area')) prompt += `建物面積：${vals('area')}\n`;
-  if (vals('madori')) prompt += `間取り：${vals('madori')}\n`;
-  if (vals('built')) prompt += `築年：${vals('built')}\n`;
-  if (vals('structure')) prompt += `構造：${vals('structure')}\n`;
-  if (vals('floor')) prompt += `所在階：${vals('floor')}\n`;
 
-  prompt += `\n【コラムの素材】\n`;
-  if (vals('appeal')) prompt += `惚れポイント：${vals('appeal')}\n`;
-  if (vals('interior')) prompt += `内装・空間：${vals('interior')}\n`;
-  if (vals('view')) prompt += `眺望・環境：${vals('view')}\n`;
-  if (vals('layout_idea')) prompt += `間取りの面白さ：${vals('layout_idea')}\n`;
-  if (vals('area_note')) prompt += `街・エリア：${vals('area_note')}\n`;
-  if (vals('drawback')) prompt += `ネック：${vals('drawback')}\n`;
-  if (vals('target')) prompt += `向いている人：${vals('target')}\n`;
-  return prompt;
+  let p = `以下の物件情報をもとに、${writer.name}らしいコラムを${length}字前後で書いてください。\n\n【物件情報】\n`;
+  if (v('category')) p += `カテゴリー：${v('category')}\n`;
+  if (v('type')) p += `種別：${v('type')}\n`;
+  if (v('address')) p += `エリア：${v('address')}\n`;
+  if (v('access')) p += `交通：${v('access')}\n`;
+  if (v('price')) p += `価格・賃料：${v('price')}\n`;
+  if (v('madori')) p += `間取り：${v('madori')}\n`;
+  if (v('built')) p += `築年：${v('built')}\n`;
+  if (v('structure')) p += `構造：${v('structure')}\n`;
+  p += `\n【コラムの素材】\n`;
+  if (v('appeal')) p += `惚れポイント：${v('appeal')}\n`;
+  if (v('interior')) p += `内装・空間：${v('interior')}\n`;
+  if (v('view')) p += `眺望・環境：${v('view')}\n`;
+  if (v('layout_idea')) p += `間取りの面白さ：${v('layout_idea')}\n`;
+  if (v('area_note')) p += `街・エリア：${v('area_note')}\n`;
+  if (v('drawback')) p += `ネック：${v('drawback')}\n`;
+  if (v('target')) p += `向いている人：${v('target')}\n`;
+  return p;
 }
 
 function setLength(btn) {
@@ -401,8 +367,8 @@ async function generateColumn(overrideLengthMode) {
 
     const charCount = (currentTitle + currentBody).length;
     let html = '';
-    if (currentTitle) html += `<div class="result-title">${escHtml(currentTitle)}</div>`;
-    html += `<div class="result-body">${escHtml(currentBody)}</div>`;
+    if (currentTitle) html += `<div class="result-title">${esc(currentTitle)}</div>`;
+    html += `<div class="result-body">${esc(currentBody)}</div>`;
     html += `<div class="char-count">${charCount}字</div>`;
     document.getElementById('outputBox').innerHTML = html;
     document.getElementById('charCountHeader').textContent = `${charCount}字`;
@@ -414,7 +380,7 @@ async function generateColumn(overrideLengthMode) {
   btn.disabled = false; btn.textContent = 'コラムを生成する';
 }
 
-function escHtml(str) {
+function esc(str) {
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
 }
 
